@@ -1,5 +1,5 @@
 {
-  "name": "spenwall/fpdm",
+  "name": "paingwin/fpdm",
   "description": "PDF form filling using FPDM Class written by FPDF author Olivier. Checkboxes resolve to Off unless stated in the file",
   "type": "library",
   "license": "MIT",
@@ -11,12 +11,12 @@
       "role": "Author"
     },
     {
-      "name": "spenwall",
+      "name": "paingwin",
       "role": "Developer",
-      "homepage": "https://github.com/spenwall/fpdm"
+      "homepage": "https://github.com/paingwin/fpdm"
     }
   ],
-  "homepage": "https://github.com/spenwall/fpdm",
+  "homepage": "https://github.com/paingwin/fpdm",
   "autoload": {
     "classmap": [
       "src/fpdm.php",
@@ -26,7 +26,7 @@
   "repositories": [
     {
       "type": "git",
-      "url": "https://github.com/spenwall/fpdm",
+      "url": "https://github.com/paingwin/fpdm",
       "name": "GitHub"
     }
   ],
@@ -43,7 +43,7 @@
     "FPDF"
   ],
   "support": {
-    "issues": "https://github.com/spenwall/fpdm/issues",
-    "source": "https://github.com/spenwall/fpdm/tree/master"
+    "issues": "https://github.com/paingwin/fpdm/issues",
+    "source": "https://github.com/paingwin/fpdm/tree/master"
   }
 }

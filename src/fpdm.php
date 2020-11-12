@@ -99,6 +99,7 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 		
 		var $info = array(); 			  //array, holds the info properties
 		var $fields = array(); 		  //array that holds fields-Data parsed from FDF
+        var $ignore_missing_fields = false;
 		
 		var $verbose = false;         //boolean ,  a debug flag to decide whether or not to show internal process 
 		var $verbose_level = 1;   //integer default is 1 and if greater than 3, shows internal parsing as well
@@ -269,6 +270,9 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 				break;
 				case 'verbose_level':
 					$this->verbose_level=$value;
+				break;
+				case 'ignore_missing_fields':
+					$this->ignore_missing_fields=$value;
 				break;
 				default:
 					$this->Error("set_modes error, Invalid mode '<i>$mode</i>'");
@@ -840,8 +844,9 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 					$pos2=$pos1+$len;
 					$CurLine=substr($CurLine,0,$pos1-1).'<'.$this->_encode_value($value).'>'.substr($CurLine,$pos2+1);
 				}
-				else
+				else if (! $this->ignore_missing_fields) {
 					$this->Error('/V not found');
+                }
 			}
 
 			$NewLen=strlen($CurLine);
@@ -865,13 +870,13 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 			
 			//Get the line(s) of the misc field values
 			if(isset($this->value_entries["$name"])) {
-				
+
 				$object_id=$this->value_entries["$name"]["infos"]["object"];
-				
+
 				if($type=="tooltip") {
-			 
+
 					$offset_shift=$this->set_field_tooltip($name,$value);
-			 
+
 				} elseif ($this->useCheckboxParser && isset($this->value_entries["$name"]['infos']['checkbox_state'])) { //FIX: set checkbox value
                     $offset_shift=$this->set_field_checkbox($name, $value);
                 //ENDFIX
@@ -879,27 +884,27 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 //				echo $this->value_entries["$name"]["values"]["$type"];
 /*					$field_value_line=$this->value_entries["$name"]["values"]["$type"];
 					$field_value_maxlen=$this->value_entries["$name"]["constraints"]["maxlen"];
-					
+
 					if($field_value_maxlen) //Truncates the size if needed
-						$value=substr($value, 0, $field_value_maxlen);				
-						
+						$value=substr($value, 0, $field_value_maxlen);
+
 					if($verbose_set) echo "<br>Change $type value of the field $name at line $field_value_line to '<i>$value</i>'";
 					$offset_shift=$this->_set_field_value($field_value_line,$value);*/
 					if(isset($this->value_entries[$name]["values"]["current"]))
 						$offset_shift=$this->_set_field_value2($this->value_entries[$name]["values"]["current"],$value,false);
 					else
 						$offset_shift=$this->_set_field_value2($this->value_entries[$name]["infos"]["name_line"],$value,true);
-				}						
+				}
 //				}else
 //					$this->Error("set_field_value failed as invalid valuetype $type for object $object_id");
-					
-					
+
+
 				//offset size shift will affect the next objects offsets taking into accound the order they appear in the file--
 				$this->apply_offset_shift_from_object($object_id,$offset_shift);
-					
-			} else 
+
+            } else if (! $this->ignore_missing_fields) {
 				$this->Error("field $name not found");
-			
+            }
 		}
 		
 		
