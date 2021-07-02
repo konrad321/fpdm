@@ -2225,14 +2225,20 @@ if (!call_user_func_array('class_exists', $__tmp)) {
         	}	
         }
         
+	public function getAvailableFormFields(): array {
+		if ($this->value_entries) return $this->value_entries;
+		return [];
+	}
+    
+	    
         /**
-         * Print Error and die
+         * Throw exception on error
          *
          * @param string $msg  Error-Message
          */
-        function Error($msg) {
+        public function Error($msg) {
         //--------------------
-        	die('<b>FPDF-Merge Error:</b> '.$msg);	
+        	throw new Exception('FPDM Error: '.$msg);
         }
 		
 		
