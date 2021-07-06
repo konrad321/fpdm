@@ -1,5 +1,5 @@
 {
-  "name": "paingwin/fpdm",
+  "name": "tyclipso/fpdm",
   "description": "PDF form filling using FPDM Class written by FPDF author Olivier. Checkboxes resolve to Off unless stated in the file",
   "type": "library",
   "license": "MIT",
@@ -14,9 +14,14 @@
       "name": "paingwin",
       "role": "Developer",
       "homepage": "https://github.com/paingwin/fpdm"
+    },
+    {
+      "name": "tyclipso",
+      "role": "Developer",
+      "homepage": "https://github.com/tyclipso/fpdm"
     }
   ],
-  "homepage": "https://github.com/paingwin/fpdm",
+  "homepage": "https://github.com/tyclipso/fpdm",
   "autoload": {
     "classmap": [
       "src/fpdm.php",
@@ -26,7 +31,7 @@
   "repositories": [
     {
       "type": "git",
-      "url": "https://github.com/paingwin/fpdm",
+      "url": "https://github.com/tyclipso/fpdm",
       "name": "GitHub"
     }
   ],
@@ -43,7 +48,7 @@
     "FPDF"
   ],
   "support": {
-    "issues": "https://github.com/paingwin/fpdm/issues",
-    "source": "https://github.com/paingwin/fpdm/tree/master"
+    "issues": "https://github.com/tyclipso/fpdm/issues",
+    "source": "https://github.com/tyclipso/fpdm/tree/master"
   }
 }
