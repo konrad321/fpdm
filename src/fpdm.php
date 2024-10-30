@@ -76,7 +76,7 @@ if (!call_user_func_array('class_exists', $__tmp)) {
     class FPDM {
     //@@@@@@@@@
 
-        protected $useCheckboxParser = false;	//boolean: allows activation of custom checkbox parser (not available in original FPDM source)
+        public $useCheckboxParser = false;	//boolean: allows activation of custom checkbox parser (not available in original FPDM source)
         private $pdf_source = '';      //string: full pathname to the input pdf , a form file
         private mixed $fdf_source = '';	  //string: full pathname to the input fdf , a form data file
 		private $pdf_output = '';     //string: full pathname to the resulting filled pdf
@@ -100,9 +100,9 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 		private $check_mode = false;      //boolean, Use this to track offset calculations errors in corrupteds pdfs files for sample
 		private $halt_mode = false; 	  //if true, stops when offset error is encountered
 
-		private $info = []; 			  //array, holds the info properties
-		private $fields = []; 		  //array that holds fields-Data parsed from FDF
-        private $ignore_missing_fields = false;
+        private $info = []; 			  //array, holds the info properties
+        private $fields = []; 		  //array that holds fields-Data parsed from FDF
+        public $ignore_missing_fields = false;
 
 		private $verbose = false;         //boolean ,  a debug flag to decide whether or not to show internal process
 		private $verbose_level = 1;   //integer default is 1 and if greater than 3, shows internal parsing as well
@@ -854,22 +854,22 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 			$CurLine=$this->pdf_entries[$line];
 			$OldLen=strlen($CurLine);
 
-			if($append)
-			{
-				$CurLine .= ' /V <'.$this->_encode_value($value).'>';
-			}
-			else
-			{
-				if(preg_match('#/V\s?[<(]([^>)]*)[>)]#', $CurLine, $a, PREG_OFFSET_CAPTURE))
-				{
-					$len = $pos1 = $pos2 = 0;
-					$len=strlen($a[1][0]);
-					$pos1=$a[1][1];
-					$pos2=$pos1+$len;
-					$CurLine=substr($CurLine,0,$pos1-1).'<'.$this->_encode_value($value).'>'.substr($CurLine,$pos2+1);
-				}
-				else if (! $this->ignore_missing_fields) {
-					$this->Error('/V not found');
+            if($append)
+            {
+                $CurLine .= ' /V <'.$this->_encode_value($value).'>';
+            }
+            else
+            {
+                if(preg_match('#/V\s?[<(]([^>)]*)[>)]#', $CurLine, $a, PREG_OFFSET_CAPTURE))
+                {
+                    $pos1 = $pos2 = 0;
+                    $len=strlen($a[1][0]);
+                    $pos1=$a[1][1];
+                    $pos2=$pos1+$len;
+                    $CurLine=substr($CurLine,0,$pos1-1).'<'.$this->_encode_value($value).'>'.substr($CurLine,$pos2+1);
+                }
+                else if (! $this->ignore_missing_fields) {
+                    $this->Error('/V not found');
                 }
 			}
 			if ($read_only) {
@@ -1593,65 +1593,65 @@ if (!call_user_func_array('class_exists', $__tmp)) {
          * @param array $stream  the stream defintion retrieved during PDF parsing
          * @param string $value the new text value 
          */
-		function change_stream_value($stream,$value) {
-		//--------------------------------------------
-		
-			$entries=&$this->pdf_entries;
-		
-			$verbose_parsing=($this->verbose&&($this->verbose_level>3));
-			
-			if($this->is_text_stream($stream)) {	// $is_text_stream gibt es nicht aber $this->is_text_stream($stream_content) gibt es
-			
-				$OldLen=$stream["length"]["value"];
-				$lMin=$stream["start"];
-				$lMax=$stream["end"];
-				
-				$stream_content=$this->_set_text_value($this->is_text_stream($stream),$value);
-				$NewLen=strlen($stream_content);
-			
-				for($l=$lMin;$l<=$lMax;$l++) {
-				
-					if($l==$lMin) {
-						$entries[$lMin]=$stream_content;
-						
-						//Update the length
-						$stream_def_line=$stream["length"]["line"];
-						$stream_def=$entries[$stream_def_line];
-						
-						$stream_def=preg_replace("/\/Length\s*(\d+)/",'/Length '.$NewLen,$stream_def);
-						
-						$entries[$stream_def_line]=$stream_def;
-						
-						//update the filter type...
-						$stream_def_line=$stream["filters"]["line"];
-						$stream_def=$entries[$stream_def_line];
-						if($verbose_parsing) {
-							echo "<pre>";
-							echo htmlentities(print_r($stream_def,true));
-							echo "</pre>";
-						}
-					
-						//...to filter Standard
-						$stream_def=preg_replace($this->streams_filter,'/Standard ',$stream_def);
-					
-						$entries[$stream_def_line]=$stream_def;
-						
-						//Update the shift
-						$size_shift=$NewLen-$OldLen;
-						$this->apply_offset_shift_from_object($obj,$size_shift);
-						
-					}else if($lMin!=$lMax) {
-						unset($entries[$l]);
-					}
-				}
-				
-				if($verbose_parsing) {
-					var_dump($stream_content);
-				}
-			}
-		}
-	
-		/**
+        function change_stream_value($stream,$value) {
+            //--------------------------------------------
+
+            $entries=&$this->pdf_entries;
+
+            $verbose_parsing=($this->verbose&&($this->verbose_level>3));
+
+            if($this->is_text_stream($stream)) {	// $is_text_stream gibt es nicht aber $this->is_text_stream($stream_content) gibt es
+
+                $OldLen=$stream["length"]["value"];
+                $lMin=$stream["start"];
+                $lMax=$stream["end"];
+
+                $stream_content=$this->_set_text_value($this->is_text_stream($stream),$value);
+                $NewLen=strlen($stream_content);
+
+                for($l=$lMin;$l<=$lMax;$l++) {
+
+                    if($l==$lMin) {
+                        $entries[$lMin]=$stream_content;
+
+                        //Update the length
+                        $stream_def_line=$stream["length"]["line"];
+                        $stream_def=$entries[$stream_def_line];
+
+                        $stream_def=preg_replace("/\/Length\s*(\d+)/",'/Length '.$NewLen,$stream_def);
+
+                        $entries[$stream_def_line]=$stream_def;
+
+                        //update the filter type...
+                        $stream_def_line=$stream["filters"]["line"];
+                        $stream_def=$entries[$stream_def_line];
+                        if($verbose_parsing) {
+                            echo "<pre>";
+                            echo htmlentities(print_r($stream_def,true));
+                            echo "</pre>";
+                        }
+
+                        //...to filter Standard
+                        $stream_def=preg_replace($this->streams_filter,'/Standard ',$stream_def);
+
+                        $entries[$stream_def_line]=$stream_def;
+
+                        //Update the shift
+                        $size_shift=$NewLen-$OldLen;
+//						$this->apply_offset_shift_from_object($obj,$size_shift);
+
+                    }else if($lMin!=$lMax) {
+                        unset($entries[$l]);
+                    }
+                }
+
+                if($verbose_parsing) {
+                    var_dump($stream_content);
+                }
+            }
+        }
+
+        /**
          * Overrides value between  Td and TJ, ommiting <>
          * 
          * @note core method
@@ -1795,150 +1795,152 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 									//Sanity values checks, watchdog.
 //									if(!array_key_exists("current",$values)) $this->Error("Cannot find value (/V) for field $name");
 //									if(!array_key_exists("default",$values)) $this->Error("Cannot find default value (/DV) for field $name");
-									
-								}else
-									if($verbose_parsing) $this->dumpContent("Object $type $subtype (obj id=$obj) is not supported");
-								
-								
-								$object=null;
-								$obj=0;
-								//FIX: parse checkbox definition
-								$ap_d_yes='';
-								$ap_d_no='';
-								$ap_line=0;
-								$ap_n_line=0;
-								$ap_d_line=0;
-								$as='';
-								$v='';
-								$dv='';
-								//ENDFIX
-								$parent_obj=0;
-								$type='';
-								$subtype='';
-								$name='';
-								$value='';
-								$maxLen=0;
-								
-							} else {
-							
-								if(preg_match("/\/Length\s*(\d+)/",$CurLine,$match)) {
-									$stream["length"]=array("line"=>$Counter,"value"=>$match[1]);
-									$stream["start"]=0;
-									$stream["end"]=0;
-									$stream["content"]='';
-									if($verbose_parsing) $this->dumpContent($CurLine,"->Stream filter length definition(<font color=\"darkorange\">{$match[1]}</font>) for object($obj) at line $Counter");
-								}
-								
-								//Handles single filter /Filter /filter_type as well as filter chains such as /Filter [/filter_type1 /filter_type2 .../filter_typeN]
-								if(preg_match_all($this->streams_filter,$CurLine,$matches)) {
-									
-									//$this->dumpContent($this->streams_filter);
-									/*$stream_filter=$match[1];
-									$stream_filter=trim(preg_replace('/(<<|\/Length\s*\d+|>>)/', '', $stream_filter),' ');
-									$stream_filters=preg_split('/\s*\//',$stream_filter);
-									array_shift($stream_filters);*/
-									$stream_filters=$matches[2];
-									$stream["filters"]=array("line"=>$Counter, "type"=>$stream_filters); 
-									if($verbose_parsing) {
-										//var_dump($stream_filters);
-										$stream_filter=implode(" ",$stream_filters);
-										$this->dumpContent($CurLine,"->Stream filter type definition(<font color=\"darkorange\">$stream_filter</font>) for object($obj) at line $Counter");
-									}
-								}	
-								
-								if(array_key_exists("length",$stream)) { //length is mandatory
-									
-									if(preg_match("/\b(stream|endstream)\b/",$CurLine,$match)) {
-									
-										if(!array_key_exists("filters",$stream))  {//filter type is optional, if none is given, its standard
-											
-											$stream["filters"]=array("type"=>array("Standard"));
-											if($verbose_parsing) {
-												var_dump($stream);
-												$this->dumpContent($CurLine,"->No stream filter type definition for object($obj) was found, setting it to '<font color=\"darkorange\">Standard</font>'");
-											}	
-										}
-										
-									
-										if($match[1] == "stream") {
-											if($verbose_parsing) $this->dumpContent($CurLine,"->Opening stream for object($obj) at line $Counter");
-											$stream["start"]=$Counter+1;
-										}else {
-											$stream["end"]=$Counter-1;
-											
-											$stream["content"]=implode("\n",array_slice($entries,$stream["start"],$stream["end"]-$stream["start"]+1));
-											
-											
-											
-											$filters=$stream["filters"]["type"];
-											$f=count($filters);
-											$stream_content=$stream["content"];
-											
-											//var_dump($filters);
-											
-											//$filters_type=$filters["type"];
-											
-											//now process the stream, ie unpack it if needed
-											//by decoding in the reverse order the streams have been encoded 
-											//This is done by applying decode using the filters in the order given by /Filter. 
-											foreach($filters as $filter_name) {
-												
-												$stream_filter=$this->getFilter($filter_name);
-												$stream_content=$stream_filter->decode($stream_content);
-												if($verbose_decoding) { 
-													echo "<br><font color=\"blue\"><u>Stream decoded using filter '<font color=\"darkorange\">$filter_name</font>'</u>:[<pre>";
-													var_dump($stream_content); //todo : manipulate this content and adjust offsets.
-													echo "</pre>]</font>";
-												}
-											}
-						
-											if($verbose_parsing) {
-												$this->dumpEntries($stream);
-												
-												echo "<font color=\"blue\">";
-												if($this->is_text_stream($stream_content)) {
-													echo "<u>Stream text unfiltered</u>:[<pre>";
-												} else {
-													echo "<u>Stream unfiltered</u>:[<pre>";
-												}
-												var_dump($stream_content); 
-												echo "</pre>]</font>";
-												$this->dumpContent($CurLine,"->Closing stream for object($obj) at line $Counter");
-											}
-											
-											$stream=array();
-										}
-									}else if($stream["start"]>0){ 
-										//stream content line that will be processed on endstream...
-									}
-									
-								} else {
-								
-									/*
-									Producer<FEFF004F00700065006E004F00660066006900630065002E006F0072006700200033002E0032>
-									/CreationDate (D:20101225151810+01'00')>>
-									*/
-									if(($creator=='')&&preg_match("/\/Creator\<([^\>]+)\>/",$CurLine,$values)) {
-										$creator=$this->decodeValue("hex",$values[1]);
-										if($verbose_parsing) echo("Creator read ($creator)");
-										$this->info["Creator"]=$creator;
-									}
-								
-									if(($producer=='')&&preg_match("/\/Producer\<([^\>]+)\>/",$CurLine,$values)) {
-										$producer=$this->decodeValue("hex",$values[1]);
-										if($verbose_parsing) echo("Producer read ($producer)");
-										$this->info["Producer"]=$producer;
-									}
-									
-									if(($creationDate=='')&&preg_match("/\/CreationDate\(([^\)]+)\)/",$CurLine,$values)) {
-										$creationDate=$values[1];
-										if($verbose_parsing) echo("Creation date read ($creationDate)");
-										$this->info["CreationDate"]=$creationDate;
-									}
-								
-									//=== DEFINITION ====
-									//preg_match("/^\/Type\s+\/(\w+)$/",$CurLine,$match)
-									$match=array();
+
+                                }else
+                                    if($verbose_parsing) $this->dumpContent("Object $type $subtype (obj id=$obj) is not supported");
+
+
+                                $object=null;
+                                $obj=0;
+                                //FIX: parse checkbox definition
+                                $ap_d_yes='';
+                                $ap_d_no='';
+                                $ap_line=0;
+                                $ap_n_line=0;
+                                $ap_d_line=0;
+                                $ap_d_first='';
+                                $ap_d_second='';
+                                $as='';
+                                $v='';
+                                $dv='';
+                                //ENDFIX
+                                $parent_obj=0;
+                                $type='';
+                                $subtype='';
+                                $name='';
+                                $value='';
+                                $maxLen=0;
+
+                            } else {
+
+                                if(preg_match("/\/Length\s*(\d+)/",$CurLine,$match)) {
+                                    $stream["length"]=array("line"=>$Counter,"value"=>$match[1]);
+                                    $stream["start"]=0;
+                                    $stream["end"]=0;
+                                    $stream["content"]='';
+                                    if($verbose_parsing) $this->dumpContent($CurLine,"->Stream filter length definition(<font color=\"darkorange\">{$match[1]}</font>) for object($obj) at line $Counter");
+                                }
+
+                                //Handles single filter /Filter /filter_type as well as filter chains such as /Filter [/filter_type1 /filter_type2 .../filter_typeN]
+                                if(preg_match_all($this->streams_filter,$CurLine,$matches)) {
+
+                                    //$this->dumpContent($this->streams_filter);
+                                    /*$stream_filter=$match[1];
+                                    $stream_filter=trim(preg_replace('/(<<|\/Length\s*\d+|>>)/', '', $stream_filter),' ');
+                                    $stream_filters=preg_split('/\s*\//',$stream_filter);
+                                    array_shift($stream_filters);*/
+                                    $stream_filters=$matches[2];
+                                    $stream["filters"]=array("line"=>$Counter, "type"=>$stream_filters);
+                                    if($verbose_parsing) {
+                                        //var_dump($stream_filters);
+                                        $stream_filter=implode(" ",$stream_filters);
+                                        $this->dumpContent($CurLine,"->Stream filter type definition(<font color=\"darkorange\">$stream_filter</font>) for object($obj) at line $Counter");
+                                    }
+                                }
+
+                                if(array_key_exists("length",$stream)) { //length is mandatory
+
+                                    if(preg_match("/\b(stream|endstream)\b/",$CurLine,$match)) {
+
+                                        if(!array_key_exists("filters",$stream))  {//filter type is optional, if none is given, its standard
+
+                                            $stream["filters"]=array("type"=>array("Standard"));
+                                            if($verbose_parsing) {
+                                                var_dump($stream);
+                                                $this->dumpContent($CurLine,"->No stream filter type definition for object($obj) was found, setting it to '<font color=\"darkorange\">Standard</font>'");
+                                            }
+                                        }
+
+
+                                        if($match[1] == "stream") {
+                                            if($verbose_parsing) $this->dumpContent($CurLine,"->Opening stream for object($obj) at line $Counter");
+                                            $stream["start"]=$Counter+1;
+                                        }else {
+                                            $stream["end"]=$Counter-1;
+
+                                            $stream["content"]=implode("\n",array_slice($entries,$stream["start"],$stream["end"]-$stream["start"]+1));
+
+
+
+                                            $filters=$stream["filters"]["type"];
+                                            $f=count($filters);
+                                            $stream_content=$stream["content"];
+
+                                            //var_dump($filters);
+
+                                            //$filters_type=$filters["type"];
+
+                                            //now process the stream, ie unpack it if needed
+                                            //by decoding in the reverse order the streams have been encoded
+                                            //This is done by applying decode using the filters in the order given by /Filter.
+                                            foreach($filters as $filter_name) {
+
+                                                $stream_filter=$this->getFilter($filter_name);
+                                                $stream_content=$stream_filter->decode($stream_content);
+                                                if($verbose_decoding) {
+                                                    echo "<br><font color=\"blue\"><u>Stream decoded using filter '<font color=\"darkorange\">$filter_name</font>'</u>:[<pre>";
+                                                    var_dump($stream_content); //todo : manipulate this content and adjust offsets.
+                                                    echo "</pre>]</font>";
+                                                }
+                                            }
+
+                                            if($verbose_parsing) {
+                                                $this->dumpEntries($stream);
+
+                                                echo "<font color=\"blue\">";
+                                                if($this->is_text_stream($stream_content)) {
+                                                    echo "<u>Stream text unfiltered</u>:[<pre>";
+                                                } else {
+                                                    echo "<u>Stream unfiltered</u>:[<pre>";
+                                                }
+                                                var_dump($stream_content);
+                                                echo "</pre>]</font>";
+                                                $this->dumpContent($CurLine,"->Closing stream for object($obj) at line $Counter");
+                                            }
+
+                                            $stream=array();
+                                        }
+                                    }else if($stream["start"]>0){
+                                        //stream content line that will be processed on endstream...
+                                    }
+
+                                } else {
+
+                                    /*
+                                    Producer<FEFF004F00700065006E004F00660066006900630065002E006F0072006700200033002E0032>
+                                    /CreationDate (D:20101225151810+01'00')>>
+                                    */
+                                    if(($creator=='')&&preg_match("/\/Creator\<([^\>]+)\>/",$CurLine,$values)) {
+                                        $creator=$this->decodeValue("hex",$values[1]);
+                                        if($verbose_parsing) echo("Creator read ($creator)");
+                                        $this->info["Creator"]=$creator;
+                                    }
+
+                                    if(($producer=='')&&preg_match("/\/Producer\<([^\>]+)\>/",$CurLine,$values)) {
+                                        $producer=$this->decodeValue("hex",$values[1]);
+                                        if($verbose_parsing) echo("Producer read ($producer)");
+                                        $this->info["Producer"]=$producer;
+                                    }
+
+                                    if(($creationDate=='')&&preg_match("/\/CreationDate\(([^\)]+)\)/",$CurLine,$values)) {
+                                        $creationDate=$values[1];
+                                        if($verbose_parsing) echo("Creation date read ($creationDate)");
+                                        $this->info["CreationDate"]=$creationDate;
+                                    }
+
+                                    //=== DEFINITION ====
+                                    //preg_match("/^\/Type\s+\/(\w+)$/",$CurLine,$match)
+                                    $match=array();
 
 									//FIX: parse checkbox definition
 									//see page 498: https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf
