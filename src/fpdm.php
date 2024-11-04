@@ -1907,9 +1907,9 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 										if(($name=="")&&preg_match("/^\/T\s?\((.+)\)\s*$/",$this->_protectContentValues($CurLine),$match)) {
 								
 											$name=$this->_unprotectContentValues($match[1]);
-											//FIX: convert ASCII object names to utf-8
+											//FIX: convert ASCII, UTF-8 or ISO-8859-1 object names to utf-8
 											// don't use utf8_encode($name) yet, it's core function since php 7.2
-											$name = mb_convert_encoding($name, 'UTF-8', 'ASCII');
+											$name = mb_convert_encoding($name, 'UTF-8', ['ASCII', 'UTF-8', 'ISO-8859-1']);
 											//ENDFIX
 											if($verbose_parsing) echo ("Object's name is '<i>$name</i>'");
 											
